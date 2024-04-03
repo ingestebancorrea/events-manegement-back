@@ -1,15 +1,15 @@
 import express,{ Express, Request, Response } from "express";
+import userRouter from "./src/routes/users";
 const port = 8000;
 
 const app:Express = express();
 
-app.get("/",( req:Request, res:Response ) => {
-    res.send("HELLO FROM EXPRESS + TS ()");
-})
+// middlewares
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
-app.get("/hi",( req:Request, res:Response ) => {
-    res.send("HI");
-})
+// routes
+app.use(userRouter);
 
 app.listen(port, () => {
     console.log(`now listening on port ${port}`);

@@ -1,3 +1,4 @@
+-- Active: 1712174224992@@127.0.0.1@5432@event_managenement_db@public
 CREATE DATABASE event_managenement_db;
 
 CREATE TABLE locations (

@@ -86,6 +86,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/pg": "^8.11.4",
     "nodemon": "^3.1.0"
   }
 }
