@@ -39,7 +39,7 @@ class UserService {
             return user;
         } catch (error) {
             console.log(error);
-            throw new Error('Failed to create user.');
+            throw new Error('Failed find a user.');
         }
     }
 }

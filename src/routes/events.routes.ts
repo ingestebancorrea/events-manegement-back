@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import EventController from '../controllers/EventController';
+import { verifyToken } from '../helpers/jwt';
 
 class EventRoutes {
     public router: Router;
@@ -12,11 +13,13 @@ class EventRoutes {
     }
 
     initializeRoutes() {
-        this.router.post('', (req, res) => res.send('hello world'));
-        this.router.get('/{id}', (req, res) => res.send('hello world'));
-        this.router.get('/', (req, res) => res.send('hello world'));
-        this.router.put('', (req, res) => res.send('hello world'));
-        this.router.delete('', (req, res) => res.send('hello world'));
+        this.router.post('', this.eventController.create.bind(this.eventController));
+        this.router.get('/', this.eventController.getAllEvents.bind(this.eventController));
+        this.router.get('/:id', verifyToken, this.eventController.getOne.bind(this.eventController));
+        this.router.put('/:id', this.eventController.update.bind(this.eventController));
+        this.router.delete('/:id', this.eventController.delete.bind(this.eventController));
+        this.router.post('/:id/attendances', verifyToken, this.eventController.registerAttendances.bind(this.eventController));
+        this.router.get('/:id/attendances', verifyToken, this.eventController.findAttendence.bind(this.eventController));
     }
 
     getRouter() {

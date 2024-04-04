@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import UserService from "../services/UserService";
 import bcrypt from "bcryptjs";
-import { User } from "../models/UserModel";
 import { generateJWT } from "../helpers/jwt";
 
 class UserController {
@@ -53,7 +52,6 @@ class UserController {
 
             if (!user) {
                 return res.status(400).json({
-                    ok: false,
                     msg: 'No hay usuario registrado con el correo ingresado.'
                 })
             }
@@ -63,7 +61,6 @@ class UserController {
 
             if (!validPassword) {
                 return res.status(400).json({
-                    ok: false,
                     msg: 'Contraseña incorrecta.'
                 })
             }

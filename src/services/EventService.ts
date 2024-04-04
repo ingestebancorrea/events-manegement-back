@@ -1,3 +1,104 @@
+import { dbConnection } from "../databases/config";
+import { Event } from "../models/EventModel";
+
 class EventService {
+    async create(name: string, description: string, date: string, location_id: string): Promise<Event>{
+        try {
+            const result = await dbConnection.query("INSERT INTO events VALUES(nextval('events_id_seq'), $1, $2, $3,$4) RETURNING id", [name, description, date, location_id]);
+            const eventId = result.rows[0].id;
+
+            return {
+                id: eventId,
+                name,
+                description,
+                date,
+                location_id
+            };
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failed to create event.');
+        }
+    }
+
+    async getAllEvents(): Promise<AllEvents[]>{
+        try{
+            const results:AllEvents[] = [];
+            const events = await dbConnection.query("SELECT *,l.name as location_name FROM events e LEFT JOIN locations l ON e.location_id = l.id");
+
+            for (let event of events.rows) {
+                const { location_id, latitude, length, location_name, ...rest } = event;
+                results.push({
+                    ...rest,
+                    location: {
+                        id: event.location_id,
+                        name: event.location_name,
+                        latitude: event.latitude,
+                        length: event.length
+                    }
+                })
+            }
+
+            return results;
+        }catch(error){
+            console.log(error);
+            throw new Error('Failure getting events.');
+        }
+    }
+
+    async getOne(id: string) {
+        try {
+            let results: AllEvents | null = null;
+    
+            const events = await dbConnection.query("SELECT e.*,l.name as location_name FROM events e LEFT JOIN locations l ON e.location_id = l.id WHERE e.id = $1", [id]);
+    
+            for (let event of events.rows) {
+                const { location_id, latitude, length, location_name, ...rest } = event;
+                results = {
+                    ...rest,
+                    location: {
+                        id: event.location_id,
+                        name: event.location_name,
+                        latitude: event.latitude,
+                        length: event.length
+                    }
+                };
+            }
+    
+            if (!results) {
+                return null;
+            }
+    
+            return results;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failure getting one event.');
+        }
+    }
+
+    async update(name: string, description: string, date: string, location_id: string,id: string): Promise<number | null>{
+        try {
+            const result = await dbConnection.query("UPDATE events e SET name=$1, description=$2, date=$3, location_id=$4 WHERE e.id = $5", [name, description, date, location_id, id]);
+            
+            const eventUpdated = result.rowCount;
+            return eventUpdated;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failure updating event.');
+        }
+    }
+
+    async delete(id: string): Promise<number | null>{
+        try{
+            const result = await dbConnection.query("DELETE FROM events e WHERE e.id = $1", [id]);
+            
+            const eventDeleted = result.rowCount;
+            return eventDeleted;
+        }catch(error){
+            console.log(error);
+            throw new Error('Failure deleting event.');
+        }
+    }
     
 }
+
+export default  EventService;
