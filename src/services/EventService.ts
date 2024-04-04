@@ -2,7 +2,7 @@ import { dbConnection } from "../databases/config";
 import { Event } from "../models/EventModel";
 
 class EventService {
-    async create(name: string, description: string, date: string, location_id: string): Promise<Event>{
+    async create(name: string, description: string, date: string, location_id: string): Promise<Event> {
         try {
             const result = await dbConnection.query("INSERT INTO events VALUES(nextval('events_id_seq'), $1, $2, $3,$4) RETURNING id", [name, description, date, location_id]);
             const eventId = result.rows[0].id;
@@ -20,10 +20,10 @@ class EventService {
         }
     }
 
-    async getAllEvents(): Promise<AllEvents[]>{
-        try{
-            const results:AllEvents[] = [];
-            const events = await dbConnection.query("SELECT *,l.name as location_name FROM events e LEFT JOIN locations l ON e.location_id = l.id");
+    async getAllEvents(): Promise<AllEvents[]> {
+        try {
+            const results: AllEvents[] = [];
+            const events = await dbConnection.query("SELECT e.*, l.id, l.latitude, l.length, l.name as location_name FROM events e LEFT JOIN locations l ON e.location_id = l.id");
 
             for (let event of events.rows) {
                 const { location_id, latitude, length, location_name, ...rest } = event;
@@ -31,15 +31,15 @@ class EventService {
                     ...rest,
                     location: {
                         id: event.location_id,
-                        name: event.location_name,
-                        latitude: event.latitude,
-                        length: event.length
+                        name: location_name,
+                        latitude: latitude,
+                        length: length
                     }
                 })
             }
 
             return results;
-        }catch(error){
+        } catch (error) {
             console.log(error);
             throw new Error('Failure getting events.');
         }
@@ -48,9 +48,9 @@ class EventService {
     async getOne(id: string) {
         try {
             let results: AllEvents | null = null;
-    
+
             const events = await dbConnection.query("SELECT e.*,l.name as location_name FROM events e LEFT JOIN locations l ON e.location_id = l.id WHERE e.id = $1", [id]);
-    
+
             for (let event of events.rows) {
                 const { location_id, latitude, length, location_name, ...rest } = event;
                 results = {
@@ -63,11 +63,11 @@ class EventService {
                     }
                 };
             }
-    
+
             if (!results) {
                 return null;
             }
-    
+
             return results;
         } catch (error) {
             console.log(error);
@@ -75,10 +75,10 @@ class EventService {
         }
     }
 
-    async update(name: string, description: string, date: string, location_id: string,id: string): Promise<number | null>{
+    async update(name: string, description: string, date: string, location_id: string, id: string): Promise<number | null> {
         try {
             const result = await dbConnection.query("UPDATE events e SET name=$1, description=$2, date=$3, location_id=$4 WHERE e.id = $5", [name, description, date, location_id, id]);
-            
+
             const eventUpdated = result.rowCount;
             return eventUpdated;
         } catch (error) {
@@ -87,18 +87,32 @@ class EventService {
         }
     }
 
-    async delete(id: string): Promise<number | null>{
-        try{
+    async delete(id: string): Promise<number | null> {
+        try {
             const result = await dbConnection.query("DELETE FROM events e WHERE e.id = $1", [id]);
-            
+
             const eventDeleted = result.rowCount;
             return eventDeleted;
-        }catch(error){
+        } catch (error) {
             console.log(error);
             throw new Error('Failure deleting event.');
         }
     }
-    
+
+    async findEventsNearbyByLocation(latitude: string, length: string) {
+        const apiKey = 'pk.eyJ1IjoiaW5nZXN0ZWJhbmNvcnJlYTgiLCJhIjoiY2x1bGdldTQ2MDNqaTJqbzIwcm8wZzBqbSJ9.RPaN2jp1kPOpGX2z7AsUrQ';
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${length},${latitude}.json?access_token=${apiKey}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failure finding event nearby by location.');
+        }
+    }
+
 }
 
-export default  EventService;
+export default EventService;

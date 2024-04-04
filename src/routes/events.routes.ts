@@ -13,13 +13,14 @@ class EventRoutes {
     }
 
     initializeRoutes() {
-        this.router.post('', this.eventController.create.bind(this.eventController));
-        this.router.get('/', this.eventController.getAllEvents.bind(this.eventController));
+        this.router.post('', verifyToken, this.eventController.create.bind(this.eventController));
+        this.router.get('/', verifyToken, this.eventController.getAllEvents.bind(this.eventController));
         this.router.get('/:id', verifyToken, this.eventController.getOne.bind(this.eventController));
-        this.router.put('/:id', this.eventController.update.bind(this.eventController));
-        this.router.delete('/:id', this.eventController.delete.bind(this.eventController));
+        this.router.put('/:id', verifyToken, this.eventController.update.bind(this.eventController));
+        this.router.delete('/:id', verifyToken, this.eventController.delete.bind(this.eventController));
         this.router.post('/:id/attendances', verifyToken, this.eventController.registerAttendances.bind(this.eventController));
         this.router.get('/:id/attendances', verifyToken, this.eventController.findAttendence.bind(this.eventController));
+        this.router.get('/nearby/latitude/:lat/length/:leng', verifyToken, this.eventController.findEventsNearbyByLocation.bind(this.eventController));
     }
 
     getRouter() {
