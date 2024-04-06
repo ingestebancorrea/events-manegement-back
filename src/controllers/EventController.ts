@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import EventService from '../services/EventService';
 import LocationService from '../services/LocationService';
 import AttendanceService from '../services/AttendanceService';
+import xlsx from 'xlsx';
+import { convertExcelDate } from '../helpers/covertExcelDate';
+import { ExcelEventData } from '../types/interfaces';
 
 class EventController {
 
@@ -81,7 +84,7 @@ class EventController {
             }
 
             // Update location
-            const location = await this.locationService.update(locationName, latitude, length, eventSaved.location.id);
+            const location = await this.locationService.update(locationName, latitude, length, eventSaved.location!.id);
 
             // Update event
             const event = await this.eventService.update(name, description, date, location.id?.toString()!, id);
@@ -113,7 +116,7 @@ class EventController {
             const eventDeleted = await this.eventService.delete(id);
 
             // Delete location
-            await this.locationService.delete(eventSaved.location.id);
+            await this.locationService.delete(eventSaved.location!.id);
 
             if (eventDeleted) {
                 res.status(200).json({
@@ -140,18 +143,18 @@ class EventController {
 
             const registeredAttendance = await this.attendanceService.findAttendance(id);
 
-            if (registeredAttendance) {
+            if (registeredAttendance.length > 0) {
                 res.status(400).json({
                     msg: 'El usuario ya fue registrado al evento anteriormente.'
                 });;
-            }
+            } else {
+                const registerAttendance = await this.attendanceService.registerAttendances(id);
 
-            const registerAttendance = await this.attendanceService.registerAttendances(id);
-
-            if (registerAttendance) {
-                res.status(200).json({
-                    msg: 'El usuario fue registrado satisfactoriamente al evento.'
-                });;
+                if (registerAttendance) {
+                    res.status(200).json({
+                        msg: 'El usuario fue registrado satisfactoriamente al evento.'
+                    });;
+                }
             }
         } catch (error) {
             console.log(error);
@@ -196,14 +199,46 @@ class EventController {
 
     async findEventsNearbyByLocation(req: Request, res: Response) {
         try {
-            const { lat, leng } = req.params;
-            
-            if (typeof lat !== 'string' || typeof leng !== 'string') {
-                throw new Error('Latitude and length must be strings');
+            const { id } = req.params;
+
+            const event = await this.eventService.getOne(id);
+
+            if (!event) {
+                return res.status(404).json({
+                    msg: 'No existe un evento registrado con el id suministrado.'
+                });
             }
 
-            const data = await this.eventService.findEventsNearbyByLocation(lat, leng);
+            const data = await this.eventService.findEventsNearbyByLocation(event!.location!.latitude, event!.location!.length);
             res.json(data);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json('Internal Server Error.');
+        }
+    }
+
+    async saveEventsByExcelFile(req: Request, res: Response){
+        try {
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+            
+            // Read the uploaded Excel file
+            const workbook = xlsx.readFile(req.file.path);
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            // Convert the sheet data to JSON
+            const excelData:ExcelEventData[] = xlsx.utils.sheet_to_json(sheet);
+
+            // Save location ( name, latitude, length )
+            // Save event (name, description, date, location_id)
+            for (let data of excelData) {
+                const date = convertExcelDate(data.Fecha).toISOString();;
+                const location = await this.locationService.create(data.Ubicacion, data.Latitud, data.Longitud);
+                await this.eventService.create(data.Nombre, data.Descripcion, date, location.id as unknown as string);
+            }
+
+            return res.json(excelData);
         } catch (error) {
             console.log(error);
             res.status(500).json('Internal Server Error.');

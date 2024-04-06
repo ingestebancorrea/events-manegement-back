@@ -1,5 +1,6 @@
 import { dbConnection } from "../databases/config";
 import { Event } from "../models/EventModel";
+import { AllEvents } from "../types/interfaces";
 
 class EventService {
     async create(name: string, description: string, date: string, location_id: string): Promise<Event> {
@@ -23,18 +24,14 @@ class EventService {
     async getAllEvents(): Promise<AllEvents[]> {
         try {
             const results: AllEvents[] = [];
-            const events = await dbConnection.query("SELECT e.*, l.id, l.latitude, l.length, l.name as location_name FROM events e LEFT JOIN locations l ON e.location_id = l.id");
+            const events = await dbConnection.query("SELECT * FROM events e");
 
             for (let event of events.rows) {
-                const { location_id, latitude, length, location_name, ...rest } = event;
                 results.push({
-                    ...rest,
-                    location: {
-                        id: event.location_id,
-                        name: location_name,
-                        latitude: latitude,
-                        length: length
-                    }
+                    id: event.id,
+                    name: event.name,
+                    description: event.description,
+                    date: event.date,
                 })
             }
 
@@ -99,7 +96,7 @@ class EventService {
         }
     }
 
-    async findEventsNearbyByLocation(latitude: string, length: string) {
+    async findEventsNearbyByLocation(latitude: number, length: number) {
         const apiKey = 'pk.eyJ1IjoiaW5nZXN0ZWJhbmNvcnJlYTgiLCJhIjoiY2x1bGdldTQ2MDNqaTJqbzIwcm8wZzBqbSJ9.RPaN2jp1kPOpGX2z7AsUrQ';
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${length},${latitude}.json?access_token=${apiKey}`;
 
@@ -110,6 +107,16 @@ class EventService {
         } catch (error) {
             console.log(error);
             throw new Error('Failure finding event nearby by location.');
+        }
+    }
+
+    async saveEventsByExcelFile(){
+        try {
+            
+            
+        } catch (error) {
+            console.log(error);
+            throw new Error('Failure uploading events to database.');
         }
     }
 

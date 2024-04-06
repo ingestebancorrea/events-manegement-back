@@ -1,0 +1,352 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API REST Events",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "LoginData": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Email del usuario"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario"
+          }
+        }
+      },
+      "Registers": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Email del usuario"
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre del usuario"
+          }
+        }
+      },
+      "CreateEvent": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del evento"
+          },
+          "descripcion": {
+            "type": "string",
+            "description": "Descripcion del evento"
+          },
+          "date": {
+            "type": "string",
+            "description": "Fecha del evento"
+          },
+          "location": {
+            "type": "object",
+            "description": "Ubicación del evento"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register/users": {
+      "post": {
+        "description": "Crear un usuario",
+        "tags": ["Auth"],
+        "requestBody": {
+          "description": "Insertar datos del usuario",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Registers"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente."
+          },
+          "400": {
+            "description": "Error intentando crear un nuevo usuario."
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "description": "Iniciar sesion",
+        "tags": ["Auth"],
+        "requestBody": {
+          "description": "Solicitud de Inicio de sesion",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesion exitoso"
+          },
+          "401": {
+            "description": "Credenciales Invalidas"
+          }
+        }
+      }
+    },
+    "/api/events": {
+      "get": {
+        "description": "Obtener todos los eventos",
+        "tags": ["Events"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Obtenemos exitosamente todos los eventos."
+          },
+          "400": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva."
+          }
+        }
+      },
+      "post": {
+        "description": "Crear un evento",
+        "tags": ["Events"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Crear un evento nuevo",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nuevo evento creado exitosamente."
+          },
+          "401": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva"
+          }
+        }
+      }
+    },
+    "/api/events/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del evento",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Obtenemos un evento en especifico",
+        "tags": ["Events"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Obtenemos exitosamente el evento."
+          },
+          "400": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva."
+          }
+        }
+      },
+      "patch": {
+        "description": "Editar evento",
+        "tags": ["Events"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del evento",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Insertar datos del servicio",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Servicio editado exitosamente"
+          },
+          "400": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva"
+          }
+        }
+      },
+      "delete": {
+        "description": "Eliminar evento",
+        "tags": ["Events"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del evento",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eliminaste exitosamente el evento."
+          },
+          "400": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva."
+          }
+        }
+      }
+    },
+    "/api/events/{id}/attendances": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del evento",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Obtener las asistencias de un evento en especifico",
+        "tags": ["Events"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Obtenemos exitosamente las asistencias del evento."
+          },
+          "400": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva."
+          }
+        }
+      }
+    },
+    "/api/events/{id}/nearby": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id del evento",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "description": "Obtener eventos cercanos a una dirección",
+        "tags": ["Events"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Obtenemos exitosamente los eventos cercanos."
+          },
+          "400": {
+            "description": "Generamos un error en caso de que la peticion no se resuelva."
+          }
+        }
+      }
+    },
+    "/api/events/upload": {
+      "post": {
+        "description": "Cargar masivamente eventos a la base de datos",
+        "tags": ["Events"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Archivo de eventos en formato Excel",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Archivo Excel con los eventos a cargar"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Eventos cargados exitosamente."
+          },
+          "400": {
+            "description": "Error al cargar los eventos."
+          }
+        }
+      }
+    }
+  }
+}
