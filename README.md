@@ -47,6 +47,12 @@ DB_HOST=192.168.1.16  por  ejemplo
     ```bash
     npm run dev
 
+# Enlace explicación del back
+https://drive.google.com/file/d/1XeeIGQJ1-wYXVIQDfBaQUqsCduudHCZ9/view?usp=sharing
+
+# Enlace explicación docker
+https://drive.google.com/file/d/1UCL6flRjxfiHOk3hraTDJSjKt87kBspM/view?usp=sharing
+
 # Licencia
 Este proyecto está bajo la Licencia MIT.
 
