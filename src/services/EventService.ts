@@ -1,6 +1,9 @@
+import dotenv from 'dotenv';
 import { dbConnection } from "../databases/config";
 import { Event } from "../models/EventModel";
 import { AllEvents } from "../types/interfaces";
+
+dotenv.config();
 
 class EventService {
     async create(name: string, description: string, date: string, location_id: string): Promise<Event> {
@@ -97,7 +100,7 @@ class EventService {
     }
 
     async findEventsNearbyByLocation(latitude: number, length: number) {
-        const apiKey = 'pk.eyJ1IjoiaW5nZXN0ZWJhbmNvcnJlYTgiLCJhIjoiY2x1bGdldTQ2MDNqaTJqbzIwcm8wZzBqbSJ9.RPaN2jp1kPOpGX2z7AsUrQ';
+        const apiKey = process.env.API_KEY;
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${length},${latitude}.json?access_token=${apiKey}`;
 
         try {

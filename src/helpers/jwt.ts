@@ -1,5 +1,8 @@
+import dotenv from 'dotenv';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+
+dotenv.config();
 
 interface Payload {
     id: string;
@@ -9,7 +12,7 @@ export const generateJWT = (id: string | number, name: string): Promise<string> 
     return new Promise((resolve, reject) => {
         const payload = { id, name };
 
-        jwt.sign(payload, 'Esto-Es-Una-PalabR@_SecretA13455644', {
+        jwt.sign(payload, process.env.JWT_SEED!, {
             expiresIn: '2h'
         }, (error, token) => {
             if (error) {
@@ -31,7 +34,7 @@ export const verifyToken = (req: Request, res: Response, next: NextFunction) => 
     }
 
     try {
-        const payload = jwt.verify(token, 'Esto-Es-Una-PalabR@_SecretA13455644') as Payload;
+        const payload = jwt.verify(token, process.env.JWT_SEED!) as Payload;
         global.userId = payload.id;
         next();
     } catch (error) {

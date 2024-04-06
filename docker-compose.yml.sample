@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  prod:
+    container_name: events-management-back
+    image: events-management-back:1.0.0
+    build: .
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3004:3004
+    command: npm run start:prod
+    env_file:
+      - .env

@@ -3,3 +3,7 @@ dist
 build
 npm-debug.log
 .env
+/uploads
+
+docker-compose.yml
+Dockerfile

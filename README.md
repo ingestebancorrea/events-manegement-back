@@ -1,11 +1,37 @@
-### Requerimientos de software
-Se debe tener instalados los siguientes programas:
-- Node js
-- npm	
+# Events API
 
-### Configuración previa del proyecto
-En el repositorio se encontrarán tres archivos de ejemplo con extensión .sample para crear la imagen de docker y posteriormente el contenedor.  Estos archivos se deben renombrar y remover la extensión .sample
-- .env.sample
-- Dockerfile.sample
-- docker-compose.yml.sample
+El siguiente proyecto sumistra información o datos de eventos.
 
+## Requerimientos de Software
+
+Asegúrate de tener instalados los siguientes programas antes de ejecutar el proyecto:
+
+- [Node.js](https://nodejs.org/) y [npm](https://www.npmjs.com/)
+
+## Configuración previa del Proyecto
+Antes de ejecutar el proyecto, asegúrate de renombrar y eliminar la extensión `.sample` de los siguientes archivos en el directorio raíz del proyecto:
+
+- `/.env.sample`: Renombra este archivo a `.env`.
+- `/Dockerfile.sample`: Renombra este archivo a `Dockerfile`.
+- `/docker-compose.yml.sample`: Renombra este archivo a `docker-compose.yml`.
+
+## Configuración Proyecto
+1. Clona el repositorio en tu máquina local:
+
+   ```bash
+   git clone https://github.com/ingestebancorrea/events-manegement-back.git
+
+2. Instalación de Dependencias
+    Después de clonar el repositorio y realizar la configuración previa, instala las dependencias del proyecto ejecutando el siguiente comando en tu terminal dentro del directorio del proyecto:
+
+    ```bash
+    npm install 
+
+3. Ejecutar proyecto con el siguiente comando:
+    ```bash
+    npm run dev
+
+# Licencia
+Este proyecto está bajo la Licencia MIT.
+
+ 
