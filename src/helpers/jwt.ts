@@ -17,13 +17,14 @@ export const generateJWT = (id: string | number, name: string): Promise<string> 
         }, (error, token) => {
             if (error) {
                 console.log(error);
-                reject('No se pudo generar el token');
+                reject(new Error('No se pudo generar el token')); // Reject with an error object
             }
 
             resolve(token!);
         });
     });
 };
+
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     const header = req.header("Authorization") || "";

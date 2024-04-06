@@ -15,6 +15,22 @@ Antes de ejecutar el proyecto, asegúrate de renombrar y eliminar la extensión 
 - `/Dockerfile.sample`: Renombra este archivo a `Dockerfile`.
 - `/docker-compose.yml.sample`: Renombra este archivo a `docker-compose.yml`.
 
+Luego necesitamos remplazar el contenido del archivo .env de la siguiente forma:
+
+```bash
+
+DB_HOST={host  de  la  base  de  datos}
+
+```
+
+Cambiar {host de la base de datos} cambiar por el host correspondiente.
+
+```bash
+
+DB_HOST=192.168.1.16  por  ejemplo
+
+```
+
 ## Configuración Proyecto
 1. Clona el repositorio en tu máquina local:
 

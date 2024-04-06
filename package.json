@@ -87,7 +87,8 @@
     "prestart": "npm run build",
     "start": "node dist/index.js",
     "preserver": "npm run build",
-    "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\""
+    "dev": "concurrently \"npx tsc -w\" \"nodemon dist/index.js\"",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -95,12 +96,20 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
+    "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/pg": "^8.11.4",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "concurrently": "^8.2.2",
-    "nodemon": "^3.1.0"
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "ts-jest": "^29.1.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
   }
 }
